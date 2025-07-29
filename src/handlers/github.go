@@ -122,14 +122,10 @@ func proxyGitHubWithRedirect(c *gin.Context, u string, redirectCount int) {
 		}
 	}()
 
-	// 如果上游404，则返回无效GitHub仓库格式错误
+	// 如果上游404，则返回错误信息
 	if resp.StatusCode == http.StatusNotFound {
-		matches := CheckGitHubURL(u)
-		if matches != nil {
-			_, reason := utils.GlobalAccessController.CheckGitHubAccess([]string{})
-			c.String(http.StatusForbidden, reason)
-			return
-		}
+		c.String(http.StatusForbidden, "无效的GitHub地址")
+		return
 	}
 	
 	// 检查文件大小限制
